@@ -30,7 +30,7 @@ app.use(cors());
 //   }
 // });
 
-app.use("/home", require("./routes/home"));
+app.use("/proxy", require("./routes/proxy"));
 
 const port = process.env.PORT || 6001;
 app.listen(port, () => {
