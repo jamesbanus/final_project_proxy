@@ -50,18 +50,11 @@ router.get("/database", async (req, res) => {
   }
 });
 
-router.post("/databasePost/:email/:password", async (req, res) => {
+router.post("/databasePostLogin/:email/:password", async (req, res) => {
   // console.log(req.query.url);
   const url = Buffer.from(req.query.url, "base64");
   console.log(url.toString());
-  if (
-    !url
-      .toString()
-      .startsWith(
-        ("http://localhost:4000/account/register",
-        "http://localhost:4000/account/login")
-      )
-  ) {
+  if (!url.toString().startsWith("http://localhost:4000/account/login")) {
     return;
   }
 
@@ -71,6 +64,29 @@ router.post("/databasePost/:email/:password", async (req, res) => {
   const accountInfo = { email: email, password: password };
 
   try {
+    console.log(url.toString());
+    const result = await axios.post(url, accountInfo);
+    res.send(result.data);
+  } catch (result) {
+    res.send(result);
+  }
+});
+
+router.post("/databasePostRegister/:email/:password", async (req, res) => {
+  // console.log(req.query.url);
+  const url = Buffer.from(req.query.url, "base64");
+  console.log(url.toString());
+  if (!url.toString().startsWith("http://localhost:4000/account/register")) {
+    return;
+  }
+
+  const email = req.params.email;
+  const password = req.params.password;
+
+  const accountInfo = { email: email, password: password };
+
+  try {
+    console.log(url.toString());
     const result = await axios.post(url, accountInfo);
     res.send(result.data);
   } catch (result) {
@@ -201,5 +217,25 @@ router.patch(
     }
   }
 );
+
+router.delete("/database/:token", async (req, res) => {
+  // console.log(req.query.url);
+  const url = Buffer.from(req.query.url, "base64");
+  //   console.log(url.toString());
+  if (!url.toString().startsWith("http://localhost:4000/useractions")) {
+    return;
+  }
+
+  const token = req.params.token;
+
+  try {
+    const result = await axios.delete(url, {
+      headers: { token: token },
+    });
+    res.send(result.data);
+  } catch (result) {
+    res.send(result);
+  }
+});
 
 module.exports = router;
