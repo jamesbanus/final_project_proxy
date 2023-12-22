@@ -95,7 +95,7 @@ router.post("/databasePostRegister/:email/:password", async (req, res) => {
 });
 
 router.get("/database/:token", async (req, res) => {
-  // console.log(req.query.url);
+  //   console.log("1", req.query.url);
   const url = Buffer.from(req.query.url, "base64");
   console.log(url.toString());
   if (!url.toString().startsWith("http://localhost:4000/useractions")) {
@@ -218,19 +218,55 @@ router.patch(
   }
 );
 
-router.delete("/database/:token", async (req, res) => {
+router.delete("/databaseDelete/:token/:password", async (req, res) => {
   // console.log(req.query.url);
   const url = Buffer.from(req.query.url, "base64");
-  //   console.log(url.toString());
+  console.log(url.toString());
   if (!url.toString().startsWith("http://localhost:4000/useractions")) {
     return;
   }
 
   const token = req.params.token;
+  const password = req.params.password;
 
   try {
     const result = await axios.delete(url, {
-      headers: { token: token },
+      headers: { token: token, password: password },
+    });
+    res.send(result.data);
+  } catch (result) {
+    res.send(result);
+  }
+});
+
+router.patch("/database/:token/:password/:password2", async (req, res) => {
+  // console.log(req.query.url);
+  const url = Buffer.from(req.query.url, "base64");
+  console.log(url.toString());
+  if (
+    !url
+      .toString()
+      .startsWith("http://localhost:4000/useractions/changePassword")
+  ) {
+    return;
+  }
+
+  const token = req.params.token;
+  const password = req.params.password;
+  const password2 = req.params.password2;
+
+  console.log(password2);
+
+  //   const data = { token: token, password: password, newPassword: newPassword };
+  const data = {};
+
+  try {
+    const result = await axios.patch(url, data, {
+      headers: {
+        token: token,
+        password: password,
+        password2: password2,
+      },
     });
     res.send(result.data);
   } catch (result) {
