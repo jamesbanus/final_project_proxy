@@ -4,6 +4,7 @@ const axios = require("axios");
 const { authorization } = require("../utils/apiUrls");
 
 let cache = {};
+let rate = 1;
 
 setInterval(() => {
   cache = {};
@@ -63,12 +64,23 @@ router.post("/databasePostLogin/:email/:password", async (req, res) => {
 
   const accountInfo = { email: email, password: password };
 
-  try {
-    console.log(url.toString());
-    const result = await axios.post(url, accountInfo);
-    res.send(result.data);
-  } catch (result) {
-    res.send(result);
+  if (rate > 5) {
+    res.send({ status: 200, message: "Limit exceeded" });
+    setTimeout(() => {
+      rate = 1;
+    }, 60000);
+  } else {
+    try {
+      console.log(url.toString());
+      const result = await axios.post(url, accountInfo);
+      res.send(result.data);
+      if (result.data.status === 0) {
+        rate = ++rate;
+        console.log(rate);
+      }
+    } catch (result) {
+      res.send(result);
+    }
   }
 });
 
